@@ -8,14 +8,14 @@ The paper discusses the problem of selecting the most influential set of individ
 
 #### Algorithmic Approach:
 As per our understanding there are two main problems they are considering:
-1.     Finding the initial set of influential individuals: This is key because the right set of individuals will have the highest amount of influence. The authors use 4 different ways of selecting the initial set of nodes:
-  1. Greedy
-  2. High Degree
-  3. Central
-  4. Random
-2.     Diffusion of idea: Once the initial set is ready, the idea can be propagated using two different diffusion models:
-  1. Linear Threshold
-  2. Independent Cascade
+1. Finding the initial set of influential individuals: This is key because the right set of individuals will have the highest amount of influence. The authors use 4 different ways of selecting the initial set of nodes:
+  * Greedy
+  * High Degree
+  * Central
+  * Random
+2. Diffusion of idea: Once the initial set is ready, the idea can be propagated using two different diffusion models:
+  * Linear Threshold
+  * Independent Cascade
 
 Using the above steps, they are trying to reason about the performance guarantees based upon the submodular functions. They have proved that for an arbitrary instance of Independent Cascade model as well as the Linear Threshold model, the resulting influence function is submodular.
 As per their evaluation, Greedy solution’s performance is within 63% of optimal solution. The heuristics of the greedy algorithm has been compared with the commonly used heuristics such as high-degree, distance-centrality and random selection.
