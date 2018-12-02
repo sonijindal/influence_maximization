@@ -34,6 +34,7 @@ def parseDataset(name, flag):
 def degreeProb(seed_size):
     #calculate initial set
     edgeProb = degreeHeuristic(GU, seed_size);
+    #print(edgeProb)
     S=generalGreedy(GU, seed_size, edgeProb);
 
     # write results S to file
@@ -111,7 +112,7 @@ def weightProb(seed_size):
 if __name__ == '__main__':
     import time
     start = time.time()
-    GU = parseDataset('facebook_combined.txt', 'un')
+    GU = parseDataset('Wiki-Vote.txt', 'un')
     GW = parseDataset('soc-sign-bitcoinalpha.csv', 'weighted')
     seed_size = 5
     while seed_size <= 5:
