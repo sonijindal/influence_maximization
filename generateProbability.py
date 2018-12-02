@@ -3,25 +3,22 @@ import networkx as nx
 from priorityQueue import PriorityQueue as PQ # priority queue class
 
 def degreeHeuristic(G, k, p=.01):
-    S = []
     edgeProb={};
     for u in G:
         degree = sum([G[u][v]['weight'] for v in G[u]])
         edgeProb[u]=degree;
+        print(edgeProb[u])
     return edgeProb
 
-def fixedHeuristic(G, k, p=.01):
-    S = []
+def fixedHeuristic(G, k, p=0.01):
     edgeProb={};
     for u in G:
         edgeProb[u]=p;
     return edgeProb
 
 def weightHeuristic(G, k, p=.01):
-    S = []
     edgeProb={};
     for u in G:
-        #TODO
         edgeProb[u]=sum([G[u][v]['weight'] for v in G[u]])
     return edgeProb
 
@@ -39,15 +36,12 @@ def distanceHeuristic(G, k):
     S_dist = PQ() # distances from each node in G to set S according to metric
     edgeProb={}
     # initialize S with furthest vertices
-    #print("all edges")
-    #print(G.edges(data=True))
-    
     try:
-        u,v,d = u,v,d = max(G.edges(data=True), key=lambda : d['weight'])
+        u,v,d = max(G.edges(data=True), key=lambda item: item[2]['weight'])
     except KeyError:
-        raise KeyError, 'Most likely you have no weight attribute'
+        print('Most likely you have no weight attribute')
     S.extend([u,v])
-    '''
+    
     # compute distances from each node in G to S
     for v in G.nodes():
         if v not in S: # calculate only for nodes in G
@@ -65,11 +59,9 @@ def distanceHeuristic(G, k):
                 try:
                     S_dist.add_task(v, priority-G[u][v]['weight']) # adds distance to the new member of S
                 except:
-                    raise u,v, "These are vertices that caused the problem"
+                    print('These are vertices that caused the problem:', u, v)
 
-    # extract objective value of the chosen set
-    objv = 0
     for u in G.nodes():
         edgeProb[u]=_sumDist(G, S, u);
-    '''
+    
     return S, edgeProb

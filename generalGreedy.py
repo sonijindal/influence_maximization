@@ -29,8 +29,10 @@ def runIC (G, S, edgeProb):
         for v in G[T[i]]: # for neighbors of a selected node
             if v not in T: # if it wasn't selected yet
                 w = G[T[i]][v]['weight'] # count the number of edges between two nodes
-                if random() <= 1 - (1-(edgeProb[T[i]]/max(edgeProb.values())))**w: # if at least one of edges propagate influence
-                    print (T[i], 'influences', v)
-                    T.append(v)
+                print(T[i])
+                print(edgeProb[T[i] + 1])
+                #if random() <= 1 - (1-(edgeProb[int(T[i])]/max(edgeProb.values())))**w: # if at least one of edges propagate influence
+                    #print (T[i], 'influences', v)
+                  #  T.append(v)
         i += 1
     return T
