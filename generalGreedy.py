@@ -29,11 +29,11 @@ def runIC (G, S, edgeProb, flag='N'):
             if v not in T: # if it wasn't selected yet
                 w = G[T[i]][v]['weight'] # count the number of edges between two nodes
                 if(flag=='Y'):
-                    val=edgeProb[v];
+                    val=edgeProb[T[i]];
                     maxval=max(edgeProb.values());
                     p=val/maxval;
                 else:
-                    p=edgeProb[v];
+                    p=edgeProb[T[i]];
                 #print("val, maxval", val, maxval, val/maxval)
                 if random() <= 1 - (1-p)**w: # if at least one of edges propagate influence
                     T.append(v)

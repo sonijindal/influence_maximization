@@ -55,7 +55,9 @@ def fixedProb(seed_size):
     return S, int(round(avg))
 
 def distanceProb(seed_size):
-    S, edgeProb = distanceHeuristic(GU, seed_size);
+    S=degreeHeuristicSeed(GU, seed_size);
+    edgeProb = distanceHeuristic(GU, S);
+    S=generalGreedy(GU, seed_size, edgeProb,'Y');
     iterations = 200 
     avg = 0
     for i in range(iterations):
@@ -67,7 +69,7 @@ def distanceProb(seed_size):
 
 def weightProb(seed_size):
     edgeProb = weightHeuristic(GU);
-    S=generalGreedy(GU, seed_size, edgeProb);
+    S=generalGreedy(GU, seed_size, edgeProb, 'Y');
     iterations = 200 
     avg = 0
     for i in range(iterations):
@@ -88,7 +90,7 @@ if __name__ == '__main__':
     distanceSpread=[];
     weightSpread=[];
 
-    while seed_size <= 10:
+    while seed_size <= 30:
         print('.................................................................................................................')
         seed_sets=[];
         sizes.append(seed_size);
@@ -109,13 +111,12 @@ if __name__ == '__main__':
         seed_sets.append(S);
         weightSpread.append(spread);
 
-        seed_size += 5
         result = set(list(seed_sets[0]))
         for s in seed_sets[1:]:
             result.intersection_update(s)
         print("Instersection set of different edge probabilities for the Seed_Size: ",seed_size, result)
         print('.................................................................................................................')
-
+        seed_size += 5
     import matplotlib.pyplot as plt
 
     X  = sizes;
