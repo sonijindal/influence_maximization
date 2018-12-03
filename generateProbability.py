@@ -2,21 +2,32 @@ import networkx as nx
 
 from priorityQueue import PriorityQueue as PQ # priority queue class
 
-def degreeHeuristic(G, k, p=.01):
+def degreeHeuristic(G):
     edgeProb={};
     for u in G:
         degree = sum([G[u][v]['weight'] for v in G[u]])
         edgeProb[u]=degree;
-        print(edgeProb[u])
     return edgeProb
 
-def fixedHeuristic(G, k, p=0.01):
+def degreeHeuristicSeed(G, k):
+    S = []
+    d = PQ()
+    for u in G:
+        degree = sum([G[u][v]['weight'] for v in G[u]])
+        # degree = len(G[u])
+        d.add_task(u, -degree)
+    for i in range(10):
+        u, priority = d.pop_item()
+        S.append(u)
+    return S
+
+def fixedHeuristic(G):
     edgeProb={};
     for u in G:
-        edgeProb[u]=p;
+        edgeProb[u]=0.5;
     return edgeProb
 
-def weightHeuristic(G, k, p=.01):
+def weightHeuristic(G):
     edgeProb={};
     for u in G:
         edgeProb[u]=sum([G[u][v]['weight'] for v in G[u]])

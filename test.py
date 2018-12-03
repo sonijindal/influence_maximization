@@ -1,12 +1,11 @@
 import networkx as nx
 
-from generateProbability  import degreeHeuristic, fixedHeuristic, distanceHeuristic, weightHeuristic 
+from generateProbability  import degreeHeuristic, fixedHeuristic, distanceHeuristic, weightHeuristic, degreeHeuristicSeed
 from generalGreedy import generalGreedy, runIC
 
 import os
 
 def parseDataset(name, flag):
-    # read in graph
     G = nx.Graph()
     with open(name) as f:
         if(flag=='weighted'):
@@ -32,19 +31,9 @@ def parseDataset(name, flag):
     return G
 
 def degreeProb(seed_size):
-    #calculate initial set
-    edgeProb = degreeHeuristic(GU, seed_size);
-    #print(edgeProb)
-    S=generalGreedy(GU, seed_size, edgeProb);
-
-    # write results S to file
-    with open('seed_set.txt', 'w') as f:
-        f.write('Degree Probability: seed size:', seed_size, ':\n')
-        for node in S:
-            f.write(str(node) + os.linesep)
-    
-    # calculate average activated set size
-    iterations = 1 # number of iterations
+    edgeProb = degreeHeuristic(GU);
+    S=generalGreedy(GU, seed_size, edgeProb, 'Y');
+    iterations = 200 
     avg = 0
     for i in range(iterations):
         T = runIC(GU, S, edgeProb)
@@ -52,74 +41,97 @@ def degreeProb(seed_size):
 
     print ('Degree Probability: Seed_size:', seed_size,' Avg. Targeted', int(round(avg)), 'nodes out of', len(GU))
 
+    return S, int(round(avg))
+
 def fixedProb(seed_size):
-    #calculate initial set
-    edgeProb = fixedHeuristic(GU, seed_size);
+    edgeProb = fixedHeuristic(GU);
     S=generalGreedy(GU, seed_size, edgeProb);
-
-    # write results S to file
-    with open('seed_set.txt', 'w') as f:
-        f.write('Fixed Probability: seed size:', seed_size, ':\n')
-        for node in S:
-            f.write(str(node) + os.linesep)
-
-    # calculate average activated set size
-    iterations = 1 # number of iterations
+    iterations = 200 
     avg = 0
     for i in range(iterations):
         T = runIC(GU, S, edgeProb)
         avg += float(len(T))/iterations
     print ('Fixed Probability: Seed_size:', seed_size,' Avg. Targeted', int(round(avg)), 'nodes out of', len(GU))
+    return S, int(round(avg))
 
 def distanceProb(seed_size):
-    #calculate initial set
-    S, edgeProb = distanceHeuristic(GW, seed_size);
-
-    # write results S to file
-    with open('seed_set.txt', 'w') as f:
-        f.write('Distance Probability: seed size:' + str(seed_size) +  ':\n')
-        for node in S:
-            f.write(str(node) + os.linesep)
-
-    # calculate average activated set size
-    iterations = 1 # number of iterations
+    S, edgeProb = distanceHeuristic(GU, seed_size);
+    iterations = 200 
     avg = 0
     for i in range(iterations):
-        T = runIC(GW, S, edgeProb)
+        T = runIC(GU, S, edgeProb)
         avg += float(len(T))/iterations
-    print ('Degree Probability: Seed_size:', seed_size,' Avg. Targeted', int(round(avg)), 'nodes out of', len(GW))
+    print ('Distance Probability: Seed_size:', seed_size,' Avg. Targeted', int(round(avg)), 'nodes out of', len(GU))
+    return S, int(round(avg))
 
 
 def weightProb(seed_size):
-    #calculate initial set
-    edgeProb = weightHeuristic(GW, seed_size);
-    S=generalGreedy(GW, seed_size, edgeProb);
-
-    # write results S to file
-    with open('seed_set.txt', 'w') as f:
-        f.write('Weight Probability: seed size:', seed_size, ':\n')
-        for node in S:
-            f.write(str(node) + os.linesep)
-
-    # calculate average activated set size
-    iterations = 1 # number of iterations
+    edgeProb = weightHeuristic(GU);
+    S=generalGreedy(GU, seed_size, edgeProb);
+    iterations = 200 
     avg = 0
     for i in range(iterations):
-        T = runIC(GW, S, edgeProb)
+        T = runIC(GU, S, edgeProb, 'Y')
         avg += float(len(T))/iterations
-    print ('Weight Probability: Seed_size:', seed_size,' Avg. Targeted', int(round(avg)), 'nodes out of', len(GW))
+    print ('Weight Probability: Seed_size:', seed_size,' Avg. Targeted', int(round(avg)), 'nodes out of', len(GU))
+    return S, int(round(avg))
 
 if __name__ == '__main__':
     import time
     start = time.time()
-    GU = parseDataset('Wiki-Vote.txt', 'un')
-    GW = parseDataset('soc-sign-bitcoinalpha.csv', 'weighted')
+    GU = parseDataset('small_graph.txt', 'un')
+    #GW = parseDataset('soc-sign-bitcoinalpha.csv', 'weighted')
     seed_size = 5
-    while seed_size <= 5:
-        degreeProb(seed_size)
-        #fixedProb(seed_size)
-        #distanceProb(seed_size)
-        #weightProb(seed_size)
-        seed_size += 5
+    sizes=[];
+    degreeSpread=[];
+    fixedSpread=[];
+    distanceSpread=[];
+    weightSpread=[];
 
+    while seed_size <= 10:
+        print('.................................................................................................................')
+        seed_sets=[];
+        sizes.append(seed_size);
+        
+        S, spread=degreeProb(seed_size)
+        seed_sets.append(S);
+        degreeSpread.append(spread);
+
+        S,spread=fixedProb(seed_size)
+        seed_sets.append(S);
+        fixedSpread.append(spread);
+        
+        S,spread=distanceProb(seed_size)
+        seed_sets.append(S);
+        distanceSpread.append(spread);
+
+        S,spread=weightProb(seed_size)
+        seed_sets.append(S);
+        weightSpread.append(spread);
+
+        seed_size += 5
+        result = set(list(seed_sets[0]))
+        for s in seed_sets[1:]:
+            result.intersection_update(s)
+        print("Instersection set of different edge probabilities for the Seed_Size: ",seed_size, result)
+        print('.................................................................................................................')
+
+    import matplotlib.pyplot as plt
+
+    X  = sizes;
+    Y1 = degreeSpread;
+    Y2 = fixedSpread;
+    Y3 = distanceSpread;
+    Y4 = weightSpread;
+
+    fig = plt.figure()
+    ax=plt
+    line1, =ax.plot(X,Y1,dashes=[6, 2], label='High Degree Heuristic')
+    line2=ax.plot(X,Y2,dashes=[6, 2], label='Fixed Probability Heuristic')
+    line3=ax.plot(X,Y3,dashes=[6, 2], label='Distance Heuristic')
+    line4=ax.plot(X,Y4,dashes=[6, 2], label='Weights Heuristic')
+    ax.legend();
+    plt.show()
+
+    plt.title('Influence of probability on the maximum spread')
     console = []
