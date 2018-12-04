@@ -29,7 +29,7 @@ def runIC (G, S, edgeProb, flag='N'):
             if v not in T: # if it wasn't selected yet
                 w = G[T[i]][v]['weight'] # count the number of edges between two nodes
                 if(flag=='Y'):
-                    val=edgeProb[T[i]];
+                    val=(edgeProb[T[i]] + edgeProb[v])/2;
                     maxval=max(edgeProb.values());
                     p=val/maxval;
                 else:
