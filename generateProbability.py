@@ -24,7 +24,7 @@ def degreeHeuristicSeed(G, k):
 def fixedHeuristic(G):
     edgeProb={};
     for u in G:
-        edgeProb[u]=0.5;
+        edgeProb[u]=0.3;
     return edgeProb
 
 def weightHeuristic(G):
@@ -32,6 +32,14 @@ def weightHeuristic(G):
     for u in G:
         edgeProb[u]=sum([G[u][v]['weight'] for v in G[u]])
     return edgeProb
+
+def randomProbHeuristic(G):
+    from random import random
+    edgeProb={};
+    for u in G:
+        edgeProb[u]=random();
+    return edgeProb
+
 
 def _sumDist (G, S, no):
     cum = 0

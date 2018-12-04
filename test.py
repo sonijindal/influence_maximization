@@ -1,6 +1,6 @@
 import networkx as nx
 
-from generateProbability  import degreeHeuristic, fixedHeuristic, distanceHeuristic, weightHeuristic, degreeHeuristicSeed
+from generateProbability  import degreeHeuristic, fixedHeuristic, distanceHeuristic, weightHeuristic, degreeHeuristicSeed, randomProbHeuristic
 from generalGreedy import generalGreedy, runIC
 
 import os
@@ -33,10 +33,10 @@ def parseDataset(name, flag):
 def degreeProb(seed_size):
     edgeProb = degreeHeuristic(GU);
     S=generalGreedy(GU, seed_size, edgeProb, 'Y');
-    iterations = 200 
+    iterations = 1000 
     avg = 0
     for i in range(iterations):
-        T = runIC(GU, S, edgeProb)
+        T = runIC(GU, S, edgeProb, 'Y')
         avg += float(len(T))/iterations
 
     print ('Degree Probability: Seed_size:', seed_size,' Avg. Targeted', int(round(avg)), 'nodes out of', len(GU))
@@ -46,7 +46,7 @@ def degreeProb(seed_size):
 def fixedProb(seed_size):
     edgeProb = fixedHeuristic(GU);
     S=generalGreedy(GU, seed_size, edgeProb);
-    iterations = 200 
+    iterations = 1000 
     avg = 0
     for i in range(iterations):
         T = runIC(GU, S, edgeProb)
@@ -54,14 +54,25 @@ def fixedProb(seed_size):
     print ('Fixed Probability: Seed_size:', seed_size,' Avg. Targeted', int(round(avg)), 'nodes out of', len(GU))
     return S, int(round(avg))
 
+def RandomProb(seed_size, edgeProb):
+    S=generalGreedy(GU, seed_size, edgeProb);
+    iterations = 1000 
+    avg = 0
+    for i in range(iterations):
+        T = runIC(GU, S, edgeProb)
+        avg += float(len(T))/iterations
+    print ('Random Probability: Seed_size:', seed_size,' Avg. Targeted', int(round(avg)), 'nodes out of', len(GU))
+    return S, int(round(avg))
+
+
 def distanceProb(seed_size):
     S=degreeHeuristicSeed(GU, seed_size);
     edgeProb = distanceHeuristic(GU, S);
     S=generalGreedy(GU, seed_size, edgeProb,'Y');
-    iterations = 200 
+    iterations = 1000 
     avg = 0
     for i in range(iterations):
-        T = runIC(GU, S, edgeProb)
+        T = runIC(GU, S, edgeProb, 'Y')
         avg += float(len(T))/iterations
     print ('Distance Probability: Seed_size:', seed_size,' Avg. Targeted', int(round(avg)), 'nodes out of', len(GU))
     return S, int(round(avg))
@@ -70,7 +81,7 @@ def distanceProb(seed_size):
 def weightProb(seed_size):
     edgeProb = weightHeuristic(GU);
     S=generalGreedy(GU, seed_size, edgeProb, 'Y');
-    iterations = 200 
+    iterations = 1000 
     avg = 0
     for i in range(iterations):
         T = runIC(GU, S, edgeProb, 'Y')
@@ -87,9 +98,10 @@ if __name__ == '__main__':
     sizes=[];
     degreeSpread=[];
     fixedSpread=[];
+    randomSpread=[];
     distanceSpread=[];
     weightSpread=[];
-
+    edgeProb = randomProbHeuristic(GU);
     while seed_size <= 30:
         print('.................................................................................................................')
         seed_sets=[];
@@ -102,6 +114,10 @@ if __name__ == '__main__':
         S,spread=fixedProb(seed_size)
         seed_sets.append(S);
         fixedSpread.append(spread);
+
+        S,spread=RandomProb(seed_size,edgeProb)
+        seed_sets.append(S);
+        randomSpread.append(spread);
         
         S,spread=distanceProb(seed_size)
         seed_sets.append(S);
@@ -122,15 +138,17 @@ if __name__ == '__main__':
     X  = sizes;
     Y1 = degreeSpread;
     Y2 = fixedSpread;
-    Y3 = distanceSpread;
-    Y4 = weightSpread;
+    Y3 = randomSpread;
+    Y4 = distanceSpread;
+    Y5 = weightSpread;
 
     fig = plt.figure()
     ax=plt
     line1, =ax.plot(X,Y1,dashes=[6, 2], label='High Degree Heuristic')
     line2=ax.plot(X,Y2,dashes=[6, 2], label='Fixed Probability Heuristic')
-    line3=ax.plot(X,Y3,dashes=[6, 2], label='Distance Heuristic')
-    line4=ax.plot(X,Y4,dashes=[6, 2], label='Weights Heuristic')
+    line2=ax.plot(X,Y3,dashes=[6, 2], label='Random Probability Heuristic')
+    line3=ax.plot(X,Y4,dashes=[6, 2], label='Distance Heuristic')
+    line4=ax.plot(X,Y5,dashes=[6, 2], label='Weights Heuristic')
     ax.legend();
     plt.show()
 
