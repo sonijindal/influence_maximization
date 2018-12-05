@@ -13,7 +13,7 @@ def degreeHeuristicSeed(G, k):
     S = []
     d = PQ()
     for u in G:
-        degree = sum([G[u][v]['weight'] for v in G[u]])
+        degree = sum([1 for v in G[u] if G[u][v]['weight']])
         # degree = len(G[u])
         d.add_task(u, -degree)
     for i in range(k):

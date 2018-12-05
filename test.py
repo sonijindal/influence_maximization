@@ -33,7 +33,7 @@ def parseDataset(name, flag):
 def degreeProb(seed_size):
     edgeProb = degreeHeuristic(GU);
     S=generalGreedy(GU, seed_size, edgeProb, 'Y');
-    iterations = 1000 
+    iterations = 200 
     avg = 0
     for i in range(iterations):
         T = runIC(GU, S, edgeProb, 'Y')
@@ -46,7 +46,7 @@ def degreeProb(seed_size):
 def fixedProb(seed_size):
     edgeProb = fixedHeuristic(GU);
     S=generalGreedy(GU, seed_size, edgeProb);
-    iterations = 1000 
+    iterations = 200 
     avg = 0
     for i in range(iterations):
         T = runIC(GU, S, edgeProb)
@@ -56,7 +56,7 @@ def fixedProb(seed_size):
 
 def RandomProb(seed_size, edgeProb):
     S=generalGreedy(GU, seed_size, edgeProb);
-    iterations = 1000 
+    iterations = 200 
     avg = 0
     for i in range(iterations):
         T = runIC(GU, S, edgeProb)
@@ -69,7 +69,7 @@ def distanceProb(seed_size):
     S=degreeHeuristicSeed(GU, seed_size);
     edgeProb = distanceHeuristic(GU, S);
     S=generalGreedy(GU, seed_size, edgeProb,'Y');
-    iterations = 1000 
+    iterations = 200 
     avg = 0
     for i in range(iterations):
         T = runIC(GU, S, edgeProb, 'Y')
@@ -81,7 +81,7 @@ def distanceProb(seed_size):
 def weightProb(seed_size):
     edgeProb = weightHeuristic(GU);
     S=generalGreedy(GU, seed_size, edgeProb, 'Y');
-    iterations = 1000 
+    iterations = 200 
     avg = 0
     for i in range(iterations):
         T = runIC(GU, S, edgeProb, 'Y')
@@ -92,7 +92,7 @@ def weightProb(seed_size):
 if __name__ == '__main__':
     import time
     start = time.time()
-    GU = parseDataset('small_graph.txt', 'un')
+    GU = parseDataset('small_graph_1000.txt', 'un')
     #GW = parseDataset('soc-sign-bitcoinalpha.csv', 'weighted')
     seed_size = 5
     sizes=[];
@@ -108,8 +108,7 @@ if __name__ == '__main__':
     distanceSpreadTime=[];
     weightSpreadTime=[];
 
-    edgeProb = randomProbHeuristic(GU);
-    
+
     while seed_size <= 30:
         print('.................................................................................................................')
         seed_sets=[];
@@ -132,13 +131,14 @@ if __name__ == '__main__':
         print ('Fixed Probability: TimeTaken:', timeTaken)
 
         start = time.time()
+        edgeProb = randomProbHeuristic(GU);
         S,spread=RandomProb(seed_size,edgeProb)
         seed_sets.append(S);
         randomSpread.append(spread);
         timeTaken = time.time() - start
         randomSpreadTime.append(timeTaken)
         print ('Random Probability: TimeTaken:', timeTaken)
-
+        
         start = time.time()
         S,spread=distanceProb(seed_size)
         seed_sets.append(S);
@@ -161,7 +161,27 @@ if __name__ == '__main__':
         print("Instersection set of different edge probabilities for the Seed_Size: ",seed_size, result)
         print('.................................................................................................................')
         seed_size += 5
-    # import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt
+
+    X  = sizes;
+    Y1 = degreeSpread;
+    Y2 = fixedSpread;
+    Y3 = randomSpread;
+    Y4 = distanceSpread;
+    Y5 = weightSpread;
+
+    fig = plt.figure()
+    ax=plt
+    line1, =ax.plot(X,Y1,dashes=[6, 2], label='High Degree Heuristic')
+    line2=ax.plot(X,Y2,dashes=[6, 2], label='Fixed Probability Heuristic')
+    line2=ax.plot(X,Y3,dashes=[6, 2], label='Random Probability Heuristic')
+    line3=ax.plot(X,Y4,dashes=[6, 2], label='Distance Heuristic')
+    line4=ax.plot(X,Y5,dashes=[6, 2], label='Weights Heuristic')
+    ax.legend();
+    plt.show()
+
+    plt.title('Influence of probability on the maximum spread')
+
     # import numpy as np
     # X  = sizes;
     # Y1 = degreeSpread;
@@ -169,8 +189,7 @@ if __name__ == '__main__':
     # Y3 = randomSpread;
     # Y4 = distanceSpread;
     # Y5 = weightSpread;
-
-    # fig = plt.figure()
+    #  fig = plt.figure()
     # ax=plt
     # line1, =ax.plot(X,Y1,dashes=[6, 2], label='High Degree Heuristic')
     # line2=ax.plot(X,Y2,dashes=[6, 2], label='Fixed Probability Heuristic')
@@ -179,38 +198,28 @@ if __name__ == '__main__':
     # line4=ax.plot(X,Y5,dashes=[6, 2], label='Weights Heuristic')
     # ax.legend();
     # plt.show()
-
-    # plt.title('Influence of probability on the maximum spread')
+    #  plt.title('Influence of probability on the maximum spread')
     # n_groups = 6
-
-    # fig, ax = plt.subplots()
-
-    # index = np.arange(n_groups)
+    #  fig, ax = plt.subplots()
+    #  index = np.arange(n_groups)
     # bar_width = 0.1
-
-    # opacity = 0.9
+    #  opacity = 0.9
     # error_config = {'ecolor': '0.3'}
-
-    # rects1 = ax.bar(index, degreeSpread, bar_width,
+    #  rects1 = ax.bar(index, degreeSpread, bar_width,
     #             alpha=opacity, color='b',
     #             label='degree')
-
-    # rects2 = ax.bar(index + bar_width, fixedSpread, bar_width,
+    #  rects2 = ax.bar(index + bar_width, fixedSpread, bar_width,
     #             alpha=opacity, color='m',
     #             label='fixed')
-
-    # rects3 = ax.bar(index + 2*bar_width, randomSpread, bar_width,
+    #  rects3 = ax.bar(index + 2*bar_width, randomSpread, bar_width,
     #             alpha=opacity, color='g',
     #             label='random')
-
-    # rects4 = ax.bar(index + 3*bar_width, distanceSpread, bar_width,
+    #  rects4 = ax.bar(index + 3*bar_width, distanceSpread, bar_width,
     #             alpha=opacity, color='y',
     #             label='distance')
-
-    # rects5 = ax.bar(index + 4*bar_width, weightSpread, bar_width,
+    #  rects5 = ax.bar(index + 4*bar_width, weightSpread, bar_width,
     #             alpha=opacity, color='c',
     #             label='weight')
-
     # ax.set_xlabel('Seed Size')
     # ax.set_ylabel('Percentage Spread')
     # ax.set_title('Percentage Spread by different heiristics')
@@ -218,7 +227,7 @@ if __name__ == '__main__':
     # ax.set_xticklabels(('5', '10', '15', '20', '25', '30'))
     # ax.set_yticks([])
     # ax.legend()
-
     # fig.tight_layout()
     # plt.show()
+
     console = []

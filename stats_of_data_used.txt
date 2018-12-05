@@ -1,0 +1,14 @@
+public graph
+
+Number of nodes: 465
+Number of edges: 577
+
+small_graph
+
+Number of nodes: 442
+Number of edges: 500
+
+small_graph_1000
+
+Number of nodes: 865
+Number of edges: 999
